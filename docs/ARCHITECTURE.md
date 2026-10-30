@@ -324,11 +324,13 @@ type Trace struct {
 | 阶段 | 内容 | 状态 |
 |---|---|---|
 | P0 | 事实快照 · 纯度内核（六段，M2 起扩到八段）· 精度/幂等/守恒断言 | **已完成** |
-| P1 | 规则模板化后台配置 · 发布校验 · 金标回归集 | 待做 |
+| P1 | 规则模板化后台配置 · 发布校验 · 金标回归集 | **金标回归集已完成**（`internal/golden`，7 例）；模板化后台配置待做 |
 | P2 | 期间锁定 · 历史重算 · 差额调整单 | **已有骨架**（内存台账） |
 | P3 | 影响分析报告 · 审批流 · 单订单秒级重算 | 待做 |
 
 P1 的关键不是规则编辑器，而是**金标回归集**：一套历史典型订单 + 期望结果，每次规则发布自动跑通。业务自助配置唯一有效的护栏是「改 A 规则把 B 弄坏」能被自动发现。
+
+金标集已按此落地（M8）：语料在 `internal/golden/cases.go`，期望在 `testdata/*.golden` 文本表，闸门是 `go test ./internal/golden`。三个设计点值得记：期望按「结算表 / 池对账 / 单笔投影」三层冻结（只冻合计会放过「合计对但归属错」）；文件头同时冻结 `engine` / `ruleset` / `facts_digest` / `run_id`，让「输入漂移」和「算法回退」成为两种不同的失败（否则为了消红而 `-update`，会把回退固化成基准）；用例各自声明压什么语义，测试断言该语义真的出现（否则用例会退化成基线副本，仍然全绿）。
 
 ---
 
@@ -349,4 +351,5 @@ P1 的关键不是规则编辑器，而是**金标回归集**：一套历史典�
 | 幂等键与摘要规范化 | `internal/calc/digest.go` — `Digest` / `runID` / `canonical` |
 | 定点与分配 | `internal/money/money.go` — `ApplyRate` / `Allocate` |
 | 台账与重算 | `internal/ledger/ledger.go` — `Post` / `Recalculate` / `causeOf` / `Entry.Cause`；用例在 `recalc_test.go`（三种成因）与 `ledger_test.go`（状态机准入） |
+| 金标回归集 | `internal/golden/cases.go`（语料）· `golden.go`（格式/比对）· `testdata/*.golden`（期望） |
 | 端到端示例 | `cmd/demo/main.go` |

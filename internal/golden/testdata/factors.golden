@@ -1,0 +1,18 @@
+# golden: factors
+# demo 事实 + RulesV1Full：档位 + 时间/产品/区域因子，全链单次舍入。
+# traps: band, factor, dual-kpi, manager, claim, distribute
+engine 2.0.0
+ruleset v1-full
+facts_digest 7fafdbd1d567e43713a07afb4fae643e5f627bbd9445ee65a5e9e157302a577a
+run_id 75b2189335ffb5b3
+warnings 2
+total 523632.63
+person P1 direct=210634.44 contract=99079.44 revenue=111555.00 split=0.00 pool=29317.34 manager=0.00 total=239951.78
+person P2 direct=30107.22 contract=15778.62 revenue=14328.60 split=0.00 pool=13117.33 manager=0.00 total=43224.55
+person P3 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=136020.75 total=136020.75
+person P4 direct=31299.84 contract=16473.60 revenue=14826.24 split=0.00 pool=5125.33 manager=0.00 total=36425.17
+person P5 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=68010.38 total=68010.38
+pool POOL-A budget=60000.00 claimed=44400.00 retained=4440.00 distributed=39960.00 carryover=20040.00
+pool POOL-B budget=20000.00 claimed=7600.00 retained=0.00 distributed=7600.00 carryover=12400.00
+order O-1001 total=378616.78
+order O-1002 total=145015.85

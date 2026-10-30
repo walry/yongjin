@@ -4,10 +4,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/walry/yongjin/internal/calc"
 	"github.com/walry/yongjin/internal/demo"
 	"github.com/walry/yongjin/internal/domain"
+	"github.com/walry/yongjin/internal/golden"
 	"github.com/walry/yongjin/internal/ledger"
 	"github.com/walry/yongjin/internal/money"
 	"github.com/walry/yongjin/internal/rules"
@@ -105,6 +107,7 @@ func main() {
 	printFactors(facts, res3)
 	printSplit(facts)
 	printPools()
+	printGolden()
 }
 
 // pct 把"比率的万分比"渲染成百分数。整数运算，不走 float64。
@@ -252,6 +255,42 @@ func sumSplit(splits []calc.SplitLine) money.Money {
 		s += x.Amount
 	}
 	return s
+}
+
+// printGolden 演示发布闸门：七份语料逐份跑一遍，和冻结的文本金标比对。
+// 它是 demo 里唯一不展示"算得多漂亮"、只回答"和上次是不是一分不差"的一段 ——
+// 数量守恒、池平账这些断言证明结构没坏，证明不了「这一批订单每个数字都没变」。
+// 需在仓库根目录运行：金标文件在 internal/golden/testdata 下。
+func printGolden() {
+	const dir = "internal/golden/testdata"
+	cases := golden.Cases()
+
+	fmt.Printf("\n=== 金标回归集：发布闸门（%d 份冻结语料 × 三层期望）===\n", len(cases))
+	fmt.Printf("  %-20s %-5s %-14s %-10s %s\n", "用例", "订单", "整期合计", "比对", "压住的语义")
+	bad := 0
+	for _, c := range cases {
+		got, err := golden.Run(c)
+		if err != nil {
+			log.Fatalf("金标用例 %s 计算失败: %v", c.Name, err)
+		}
+		want, err := golden.Load(dir, c.Name)
+		if err != nil {
+			log.Fatalf("读取金标 %s 失败: %v（先在仓库根目录跑 go test ./internal/golden -update）", c.Name, err)
+		}
+		state := "全绿"
+		if ms := golden.Diff(want, got); len(ms) > 0 {
+			bad++
+			state = fmt.Sprintf("差异 %d 处", len(ms))
+			fmt.Print(golden.FormatDiff(c.Name, ms))
+		}
+		fmt.Printf("  %-20s %-5d %-14s %-10s %s\n",
+			c.Name, len(got.Orders), got.Total, state, strings.Join(c.Tags, "/"))
+	}
+	if bad > 0 {
+		fmt.Printf("  => %d 份语料不一致，禁止发布（先查是输入漂移还是算法回退）\n", bad)
+		return
+	}
+	fmt.Printf("  => %d 份语料逐分一致，可以发布\n", len(cases))
 }
 
 // printPools 演示池的两层：领取受预算约束、按成单全序 FIFO；分发决定这笔钱给谁。

@@ -1,0 +1,18 @@
+# golden: bands
+# demo 事实 + RulesV1Bands：达成率命中 LOW/NORMAL/HIGH/TOP 四档，倍率 0.9~1.5。
+# traps: band, dual-kpi, manager, claim, distribute
+engine 2.0.0
+ruleset v1-bands
+facts_digest 7fafdbd1d567e43713a07afb4fae643e5f627bbd9445ee65a5e9e157302a577a
+run_id e02603bedeb631c8
+warnings 5
+total 309178.00
+person P1 direct=118740.00 contract=55920.00 revenue=62820.00 split=0.00 pool=29317.34 manager=0.00 total=148057.34
+person P2 direct=16164.00 contract=8460.00 revenue=7704.00 split=0.00 pool=13117.33 manager=0.00 total=29281.33
+person P3 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=74748.00 total=74748.00
+person P4 direct=14592.00 contract=7680.00 revenue=6912.00 split=0.00 pool=5125.33 manager=0.00 total=19717.33
+person P5 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=37374.00 total=37374.00
+pool POOL-A budget=60000.00 claimed=44400.00 retained=4440.00 distributed=39960.00 carryover=20040.00
+pool POOL-B budget=20000.00 claimed=7600.00 retained=0.00 distributed=7600.00 carryover=12400.00
+order O-1001 total=211873.00
+order O-1002 total=97305.00

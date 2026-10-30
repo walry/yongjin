@@ -9,6 +9,8 @@ go build ./...                # 编译
 go test ./...                 # 全部测试
 go test ./internal/money -v   # 单个包
 go test ./internal/calc -run TestRunEndToEnd -v   # 单个用例
+go test ./internal/golden -v                     # 金标回归集（发布闸门）
+go test ./internal/golden -update                # 重定金标基准（先解释清楚为什么变）
 go vet ./...
 gofmt -l .                    # 格式检查（应为空）
 go run ./cmd/demo             # 端到端演示
@@ -28,6 +30,7 @@ go run ./cmd/demo             # 端到端演示
 | `internal/domain` | 事实实体 + 规则/覆盖模型 | 零依赖，不得导入其他内部包（`money` 除外） |
 | `internal/rules` | 编译成索引：特异性裁决、冲突拦截、缺口报告 | 冲突返回 error 而非告警 |
 | `internal/calc` | 归集 + 八段流水线（见下）；池两段在 `pool.go`，投影在 `project.go`，按人求和在 `aggregate.go` | 不读时钟、不碰 DB、无随机 |
+| `internal/golden` | 金标回归集：冻结语料 + 三层期望 + 文本表比对 | 语料按 Tag 声明压什么语义并自检；期望按人/池/单三层冻结，不只冻合计 |
 | `internal/ledger` | 期间状态、入账、历史重算差额调整 | 锁定期间拒绝改写；未锁定 `Post` 覆盖草稿；`Recalculate` 只准入 `Locked`，只追加 adjustment 且带 `Cause` |
 | `internal/demo` | 示例事实与 v1/v2 规则集 | 被 `cmd/demo` 与测试共用 |
 
@@ -72,6 +75,7 @@ go run ./cmd/demo             # 端到端演示
 13. 管理奖基数恒为分账前 `DirectLine.Amount`，且 `ManagerBonus` 必须带 `OrderID/LineID` 才能逐条对上账（`TestManagerBaseIsPreSplit`）；池分成不进管理奖上溯（`TestManagerBonusIgnoresPools`）。
 14. 投影不改 `CalcRunID`，也不得另写求和：`ProjectByPerson` 原样保留本人的结算行，`ProjectByOrder` 把裁剪后的明细喂回 `aggregatePersonTotals`。全部订单的投影合计必须等于整期合计（`TestProjectByOrderReaggregates`）。
 15. 台账只追加：`Post` 在 `Locked` 期间拒写，对 `Calculated` 期间是**覆盖**草稿（不覆盖会让账面翻倍）；`Recalculate` 只准入 `Locked`，按人 ID 排序出分录，`Σdelta == Σnew − Σold` 不过即拒。`Entry.Cause` 必须由 `causeOf` 从 `CalcRunID` 四要素推导，不接受调用方自报；差额非零而 `Cause` 为空等于「没换输入却换了结果」，返回 error（`TestPostOverwritesUnlockedDraft`、`TestRecalculateRequiresLockedPeriod`、`TestRecalculateRateChangeOnlyMovesDirectAndManager`）。
+16. 金标集是发布闸门：`internal/golden` 必须全绿，任何规则或引擎改动都不得让既有用例变红。语料自带 `Tags` 声明它压什么语义，测试断言该语义在结果中**真实出现**（`TestGoldenCasesTrapWhatTheyClaim`）——少了这条，一次「顺手删掉分账规则」会让 `split` 悄悄退化成 `baseline` 的复制品，而金标集仍然全绿地替它作证。`-update` 是唯一能让金标集失去意义的操作，只能在能解释到具体业务口径时使用。
 
 ### 新增规则类型的步骤
 
@@ -79,3 +83,4 @@ go run ./cmd/demo             # 端到端演示
 2. `internal/rules/index.go`：新维度要同时登记到 `domain.Scope`、`domain.MatchCtx`、`specificityWeight` 与 `Matches`/`Overlaps`（漏一处只静默失配，不报错）；冲突检测走 `Scope.Overlaps` 两两判定，不按目录枚举上下文。若新阶段的规则本就该同时命中并相乘（如 `PhaseFactor`），裁决域要按 `arbitrationKey` 细分，否则合法配置会被判成冲突。
 3. `internal/calc/run.go` 插入对应阶段处理，并追加 `Trace`。
 4. `internal/calc/run_test.go` 补守恒与命中断言；`internal/demo/data.go` 补示例规则。
+5. `internal/golden/cases.go` 补一条压新语义的用例（声明 `Tags` 并在 `golden_test.go` 的覆盖度列表里登记）；金额有意变化时跑 `go test ./internal/golden -update`，并逐条核对差异——金标变更必须能解释到具体业务口径。

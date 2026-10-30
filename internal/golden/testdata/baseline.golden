@@ -1,0 +1,18 @@
+# golden: baseline
+# demo 事实 + RulesV1：无档位 / 无因子 / 无分账。倍率恒 1.0，金额是回归锚点。
+# traps: claim, distribute, manager, dual-kpi, carryover, retained
+engine 2.0.0
+ruleset v1
+facts_digest 7fafdbd1d567e43713a07afb4fae643e5f627bbd9445ee65a5e9e157302a577a
+run_id 2c39ee620dca756f
+warnings 11
+total 249212.50
+person P1 direct=89600.00 contract=47000.00 revenue=42600.00 split=0.00 pool=29317.34 manager=0.00 total=118917.34
+person P2 direct=13470.00 contract=7050.00 revenue=6420.00 split=0.00 pool=13117.33 manager=0.00 total=26587.33
+person P3 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=57615.00 total=57615.00
+person P4 direct=12160.00 contract=6400.00 revenue=5760.00 split=0.00 pool=5125.33 manager=0.00 total=17285.33
+person P5 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=28807.50 total=28807.50
+pool POOL-A budget=60000.00 claimed=44400.00 retained=4440.00 distributed=39960.00 carryover=20040.00
+pool POOL-B budget=20000.00 claimed=7600.00 retained=0.00 distributed=7600.00 carryover=12400.00
+order O-1001 total=172610.00
+order O-1002 total=76602.50

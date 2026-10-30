@@ -9,9 +9,11 @@
 ## 运行
 
 ```bash
-go run ./cmd/demo        # 端到端演示：发布体检 → 计算 → 入账 → 锁期 → 重算 → 差额调整
+go run ./cmd/demo        # 端到端演示：发布体检 → 计算 → 入账 → 锁期 → 重算 → 差额调整 → 金标闸门
 go test ./...            # 全部单测
 go test ./internal/calc -run TestRunEndToEnd -v   # 只跑某个用例
+go test ./internal/golden -v                     # 金标回归集（发布闸门）
+go test ./internal/golden -update                # 重定金标基准（必须先解释清楚为什么变）
 go vet ./...
 ```
 
@@ -24,6 +26,7 @@ go vet ./...
 | `internal/rules` | 规则编译：特异性裁决、冲突拦截、缺口报告、矩阵视图 |
 | `internal/calc` | 纯函数内核（归集 + 八段流水线 + 因子链 + 分账 + 池两段）+ 守恒断言 + trace |
 | `internal/ledger` | 追加式台账、期间锁定、历史重算差额调整 |
+| `internal/golden` | 金标回归集：冻结语料 + 三层期望 + 文本表比对 |
 | `internal/demo` | 示例事实与 v1/v2 规则集 |
 
 ## 不可妥协的约束
@@ -34,3 +37,4 @@ go vet ./...
 4. **倍率全链只舍入一次**：`基数 × 基准费率 × 档位倍数 × Π 因子倍数` 走同一次 `money.ApplyChain`，`Trace.Replay()` 必须逐分复算回原金额。
 5. **分账是零和转移**：`Σ 分出 + 自留 == 分账前金额`，全公司 `Σ Split == 0`，只拆一次不级联。
 6. **池是预算，不是费率**：预算属事实，规则只给领取比例；按成单全序 FIFO 领，领完为止，不做按比例缩放。领取与分发明细分两层留痕（`PoolClaim` / `Distribution`），否则"池没发完是因为没订单还是规则没配"无法区分。
+7. **金标集是发布闸门**：任何规则或引擎改动都必须让 `internal/golden` 全绿。金标文件里同时冻结 `facts_digest` / `ruleset` / `engine` / `run_id`，「输入变了」与「算法变了」是两种不同的失败；`-update` 只在能解释到具体业务口径时使用——它是唯一能让金标集失去意义的操作。

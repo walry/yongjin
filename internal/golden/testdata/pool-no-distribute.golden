@@ -1,0 +1,18 @@
+# golden: pool-no-distribute
+# demo 事实（POOL-A 预算 30000）+ RulesV1Full 去掉 R-DIST-A：领到的钱全额留存结转并报缺口。
+# traps: claim, carryover, retained, warning, band, factor
+engine 2.0.0
+ruleset v1-full-nodist
+facts_digest 09c610a7d0c45db9f9f9082a54f39fd800e57bed41dd50cc45a9bd39b25bd862
+run_id 4ca9f0c8d6018c09
+warnings 4
+total 483672.63
+person P1 direct=210634.44 contract=99079.44 revenue=111555.00 split=0.00 pool=2533.34 manager=0.00 total=213167.78
+person P2 direct=30107.22 contract=15778.62 revenue=14328.60 split=0.00 pool=2533.33 manager=0.00 total=32640.55
+person P3 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=136020.75 total=136020.75
+person P4 direct=31299.84 contract=16473.60 revenue=14826.24 split=0.00 pool=2533.33 manager=0.00 total=33833.17
+person P5 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=68010.38 total=68010.38
+pool POOL-A budget=30000.00 claimed=30000.00 retained=30000.00 distributed=0.00 carryover=30000.00
+pool POOL-B budget=20000.00 claimed=7600.00 retained=0.00 distributed=7600.00 carryover=12400.00
+order O-1001 total=352696.78
+order O-1002 total=130975.85

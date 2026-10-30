@@ -1,0 +1,18 @@
+# golden: edge
+# demo 事实 + P2 目标清零 + O-1002/L1 收入清零：最低档回落、单口径出行、告警不静默。
+# traps: warning, band, factor, claim, distribute, carryover
+engine 2.0.0
+ruleset v1-full
+facts_digest 7c99e8b823a57b82a80f2dd69ff2fbdcaf61f26566995618a455ca9db7e8d9e4
+run_id 44be4edf78775359
+warnings 4
+total 386443.34
+person P1 direct=149630.64 contract=99079.44 revenue=50551.20 split=0.00 pool=18085.34 manager=0.00 total=167715.98
+person P2 direct=20740.00 contract=11833.96 revenue=8906.04 split=0.00 pool=10309.33 manager=0.00 total=31049.33
+person P3 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=100835.24 total=100835.24
+person P4 direct=31299.84 contract=16473.60 revenue=14826.24 split=0.00 pool=5125.33 manager=0.00 total=36425.17
+person P5 direct=0.00 contract=0.00 revenue=0.00 split=0.00 pool=0.00 manager=50417.62 total=50417.62
+pool POOL-A budget=60000.00 claimed=28800.00 retained=2880.00 distributed=25920.00 carryover=34080.00
+pool POOL-B budget=20000.00 claimed=7600.00 retained=0.00 distributed=7600.00 carryover=12400.00
+order O-1001 total=325373.59
+order O-1002 total=61069.75
