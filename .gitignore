@@ -1,0 +1,12 @@
+# IDE
+.idea/
+.vscode/
+
+# 构建产物
+/yongjin
+/demo
+*.test
+*.out
+
+# macOS
+.DS_Store
