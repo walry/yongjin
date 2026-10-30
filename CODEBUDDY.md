@@ -77,6 +77,10 @@ go run ./cmd/demo             # 端到端演示
 15. 台账只追加：`Post` 在 `Locked` 期间拒写，对 `Calculated` 期间是**覆盖**草稿（不覆盖会让账面翻倍）；`Recalculate` 只准入 `Locked`，按人 ID 排序出分录，`Σdelta == Σnew − Σold` 不过即拒。`Entry.Cause` 必须由 `causeOf` 从 `CalcRunID` 四要素推导，不接受调用方自报；差额非零而 `Cause` 为空等于「没换输入却换了结果」，返回 error（`TestPostOverwritesUnlockedDraft`、`TestRecalculateRequiresLockedPeriod`、`TestRecalculateRateChangeOnlyMovesDirectAndManager`）。
 16. 金标集是发布闸门：`internal/golden` 必须全绿，任何规则或引擎改动都不得让既有用例变红。语料自带 `Tags` 声明它压什么语义，测试断言该语义在结果中**真实出现**（`TestGoldenCasesTrapWhatTheyClaim`）——少了这条，一次「顺手删掉分账规则」会让 `split` 悄悄退化成 `baseline` 的复制品，而金标集仍然全绿地替它作证。`-update` 是唯一能让金标集失去意义的操作，只能在能解释到具体业务口径时使用。
 
+### 范围外（不要实现）
+
+多币种、多组织。金额就是 `money.Money`（`int64` 分）、单币种、单法人：不加 `Currency` 字段、不加汇率/换算时点、不做分币种台账。跨法人按法人分别装载 `Facts` 各跑一次 `calc.Run`。若有人要求「顺手加个币种」，先确认守恒式（池平账、`Σ Split == 0`、台账 `Σdelta`）要不要按分组改写——那才是真实代价。
+
 ### 新增规则类型的步骤
 
 1. `internal/domain/rule.go` 加 `Phase`/`ActionKind` 常量与必要字段。
